@@ -65,4 +65,8 @@
     return self;
 }
 
+- (BOOL)whiteLabel {
+    return YES; // We paid for UserVoice!
+}
+
 @end
