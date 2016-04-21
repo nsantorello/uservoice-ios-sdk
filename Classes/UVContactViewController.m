@@ -82,6 +82,7 @@
 - (void)next {
     _proceed = YES;
     [self showActivityIndicator];
+    [self skipInstantAnswers];
 }
 
 - (UIScrollView *)scrollView {
