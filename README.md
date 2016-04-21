@@ -36,7 +36,7 @@ The SDK is easily callable from Swift. You just need to:
 
 1. Add `pod 'uservoice-iphone-sdk', '~> 3.2'` to your [Podfile](https://github.com/uservoice/uservoice-ios-sdk-example-swift/blob/master/Podfile)
 2. `pod install`
-3. Add `#import "UserVoice.h"` to your [bridging header](https://github.com/uservoice/uservoice-ios-sdk-example-swift/blob/master/SDK%20Demo/UserVoice-Bridging-Header.h)
+3. Add `import uservoice_iphone_sdk` to your Swift file
 4. Create a config: `var config = UVConfig(site: "demo.uservoice.com")`
 5. Pass the config: `UserVoice.initialize(config)`
 6. Launch the SDK: `UserVoice.presentUserVoiceInterfaceForParentViewController(self)`
