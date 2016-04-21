@@ -13,7 +13,6 @@
 
 @interface UVContactViewController : UVBaseViewController<UVInstantAnswersDelegate, UITextViewDelegate, UIActionSheetDelegate>
 
-@property (nonatomic,retain) UVInstantAnswerManager *instantAnswerManager;
 @property (nonatomic,retain) NSString *loadedDraft;
 
 @end

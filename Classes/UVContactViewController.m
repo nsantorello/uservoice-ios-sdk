@@ -32,11 +32,6 @@
     view.frame = [self contentFrame];
 
     [self registerForKeyboardNotifications];
-    _instantAnswerManager = [UVInstantAnswerManager new];
-    _instantAnswerManager.delegate = self;
-    _instantAnswerManager.articleHelpfulPrompt = NSLocalizedStringFromTableInBundle(@"Do you still want to contact us?", @"UserVoice", [UserVoice bundle], nil);
-    _instantAnswerManager.articleReturnMessage = NSLocalizedStringFromTableInBundle(@"Yes, go to my message", @"UserVoice", [UserVoice bundle], nil);
-    _instantAnswerManager.deflectingType = @"Ticket";
 
     self.navigationItem.title = NSLocalizedStringFromTableInBundle(@"Send us a message", @"UserVoice", [UserVoice bundle], nil);
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Back", @"UserVoice", [UserVoice bundle], nil) style:UIBarButtonItemStylePlain target:nil action:nil];
@@ -69,31 +64,24 @@
 }
 
 - (void)dismiss {
-    _instantAnswerManager.delegate = nil;
     [super dismiss];
 }
 
 - (void)textViewDidChange:(UVTextView *)theTextEditor {
     NSString *text = [theTextEditor.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     self.navigationItem.rightBarButtonItem.enabled = (text.length > 0);
-    _instantAnswerManager.searchText = text;
 }
 
 - (void)didUpdateInstantAnswers {
     if (_proceed) {
         _proceed = NO;
         [self hideActivityIndicator];
-        [_instantAnswerManager pushInstantAnswersViewForParent:self articlesFirst:YES];
     }
 }
 
 - (void)next {
     _proceed = YES;
     [self showActivityIndicator];
-    [_instantAnswerManager search];
-    if (!_instantAnswerManager.loading) {
-        [self didUpdateInstantAnswers];
-    }
 }
 
 - (UIScrollView *)scrollView {
@@ -222,7 +210,7 @@
 
 - (void)loadDraft {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-    self.loadedDraft = _instantAnswerManager.searchText = _fieldsView.textView.text = [prefs stringForKey:@"uv-message-text"];
+    self.loadedDraft = _fieldsView.textView.text = [prefs stringForKey:@"uv-message-text"];
 }
 
 - (void)saveDraft {
@@ -240,9 +228,6 @@
 }
 
 - (void)dealloc {
-    if (_instantAnswerManager) {
-        _instantAnswerManager.delegate = nil;
-    }
     if (_detailsController) {
         _detailsController.delegate = nil;
     }
