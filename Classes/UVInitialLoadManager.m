@@ -96,17 +96,15 @@
     UVClientConfig *clientConfig = [UVSession currentSession].clientConfig;
     _configDone = YES;
     [self loadUser];
+    
     if (clientConfig.ticketsEnabled) {
         if ([UVSession currentSession].config.topicId) {
             [UVHelpTopic getTopicWithId:[UVSession currentSession].config.topicId delegate:self];
-            [UVArticle getArticlesWithTopicId:[UVSession currentSession].config.topicId page:1 delegate:self];
         } else {
-            [UVHelpTopic getAllWithDelegate:self];
-            [UVArticle getArticlesWithPage:1 delegate:self];
+            [UVHelpTopic getTopicsWithPage:1 delegate:self];
         }
     } else {
         _topicsDone = YES;
-        _articlesDone = YES;
     }
     [self checkComplete];
 }
@@ -116,6 +114,19 @@
     [UVSession currentSession].forum = forum;
     _forumDone = YES;
     [self checkComplete];
+}
+
+- (void)getArticlesWithToken{
+     UVClientConfig *clientConfig = [UVSession currentSession].clientConfig;
+    if (clientConfig.ticketsEnabled) {
+        if ([UVSession currentSession].config.topicId) {
+           [UVArticle getArticlesWithTopicId:[UVSession currentSession].config.topicId page:1 delegate:self];
+        } else {
+           [UVArticle getArticlesWithPage:1 delegate:self];
+        }
+    } else {
+        _articlesDone = YES;
+    }
 }
 
 - (void)didCreateUser:(UVUser *)theUser {
@@ -135,6 +146,8 @@
 
 - (void)didLoadUser {
     _userDone = YES;
+    [self getArticlesWithToken];
+
     if ([UVSession currentSession].clientConfig.feedbackEnabled) {
         [UVForum getWithId:(int)[UVSession currentSession].config.forumId delegate:self];
     } else {
@@ -150,16 +163,18 @@
     [self checkComplete];
 }
 
-- (void)didRetrieveHelpTopics:(NSArray *)topics {
+- (void)didRetrieveHelpTopics:(NSArray *)topics pagination:(UVPaginationInfo *)pagination {
     if (_dismissed) return;
     [UVSession currentSession].topics = [topics filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"articleCount > 0"]];
+    [UVSession currentSession].topicPagination = pagination;
     _topicsDone = YES;
     [self checkComplete];
 }
 
-- (void)didRetrieveArticles:(NSArray *)articles {
+- (void)didRetrieveArticles:(NSArray *)articles pagination:(UVPaginationInfo *)pagination {
     if (_dismissed) return;
     [UVSession currentSession].articles = articles;
+    [UVSession currentSession].articlePagination = pagination;
     _articlesDone = YES;
     [self checkComplete];
 }
